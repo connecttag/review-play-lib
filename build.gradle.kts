@@ -1,0 +1,92 @@
+plugins {
+    alias(libs.plugins.android.library)
+    `maven-publish`
+}
+
+group = "org.connecttag.libs.kotlin"
+version = "1.0.0"
+
+android {
+    namespace = "org.connecttag.lib.review"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 24
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+dependencies {
+    // Google Play In-App Review Library
+    implementation("com.google.android.play:review-ktx:2.0.2")
+
+    // Kotlin Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+
+    // Testing
+    testImplementation(libs.junit4)
+    testImplementation(libs.kotlinx.coroutines.test)
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = "org.connecttag.libs.kotlin"
+                artifactId = "review-play-lib"
+                version = "1.0.0"
+
+                pom {
+                    name.set("ConnectTag Review Play Lib")
+                    description.set("Google Play In-App Review API manager with configurable prompt intervals, session tracking, criteria evaluators, and fake testing engine")
+                    url.set("https://github.com/connecttag/review-play-lib")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("connecttagye")
+                            name.set("Connect Tag")
+                            email.set("connecttagye@gmail.com")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:https://github.com/connecttag/review-play-lib.git")
+                        developerConnection.set("scm:git:ssh://git@github.com:connecttag/review-play-lib.git")
+                        url.set("https://github.com/connecttag/review-play-lib/tree/main")
+                    }
+                }
+            }
+        }
+    }
+}
